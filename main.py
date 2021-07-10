@@ -3,6 +3,7 @@ import pygame
 from pygame.locals import KEYDOWN, K_q
 
 SCREENSIZE = WIDTH, HEIGHT = 600, 400
+#PADDING = PADDINGBOTTOM, PADDINGRIGHT = 60, 60
 BLACK = (0, 0, 0)
 GREY = (160, 160, 160)
 # GLOBAL VARS, Using a Dictionary.
@@ -18,7 +19,8 @@ def main():
     while True:
         checkEvents()
         _VARS['surf'].fill(GREY)
-        drawLine()
+        #drawLine()
+        drawGrid(5)
         pygame.display.update()
 
 def checkEvents():
@@ -28,6 +30,28 @@ def checkEvents():
         elif event.type == KEYDOWN and event.key == K_q:
             pygame.quit()
             sys.exit()
+
+def drawGrid(divisions):
+    CONTAINER_WIDTH_HEIGHT = 300
+    cont_x, cont_y =10, 10
+
+    drawRect(cont_x, cont_y, CONTAINER_WIDTH_HEIGHT)
+    cell_size = CONTAINER_WIDTH_HEIGHT/divisions
+
+    for x in range(divisions):
+        pygame.draw.line(_VARS['surf'],BLACK, (cont_x+(cell_size*x),0+cont_y),
+                         (cont_x+(cell_size*x),CONTAINER_WIDTH_HEIGHT+cont_y),2)
+
+    for y in range(divisions):
+        pygame.draw.line(_VARS['surf'], BLACK, (cont_x, cont_y+(cell_size*y)),
+                         (cont_x+CONTAINER_WIDTH_HEIGHT, 0 + cont_y + (cell_size*y)), 2)
+
+
+def drawRect(x, y, Size):
+    pygame.draw.line(_VARS['surf'], BLACK, (x,y), (Size + x, y), 2)
+    pygame.draw.line(_VARS['surf'], BLACK, (x,y), (x, Size + y), 2)
+    pygame.draw.line(_VARS['surf'], BLACK, (x, Size + y), (Size + x, Size + y), 2)
+    pygame.draw.line(_VARS['surf'], BLACK, (Size + x, y),(Size + x, Size + y), 2)
 
 
 def drawLine():
