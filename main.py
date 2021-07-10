@@ -20,7 +20,8 @@ def main():
         checkEvents()
         _VARS['surf'].fill(GREY)
         #drawLine()
-        drawGrid(5)
+        drawGrid(4)
+        drawRect()
         pygame.display.update()
 
 def checkEvents():
@@ -33,9 +34,12 @@ def checkEvents():
 
 def drawGrid(divisions):
     CONTAINER_WIDTH_HEIGHT = 300
-    cont_x, cont_y =10, 10
+    cont_x, cont_y = 10, 10
+    pygame.draw.line(_VARS['surf'], BLACK, (cont_x, cont_y), (CONTAINER_WIDTH_HEIGHT+cont_x, cont_y), 2)
+    pygame.draw.line(_VARS['surf'], BLACK, (cont_x, cont_y), (cont_x, CONTAINER_WIDTH_HEIGHT+cont_y), 2)
+    pygame.draw.line(_VARS['surf'], BLACK, (cont_x, CONTAINER_WIDTH_HEIGHT+cont_y), (CONTAINER_WIDTH_HEIGHT+cont_x, CONTAINER_WIDTH_HEIGHT+cont_y), 2)
+    pygame.draw.line(_VARS['surf'], BLACK, (CONTAINER_WIDTH_HEIGHT+cont_x, cont_y), (CONTAINER_WIDTH_HEIGHT+cont_x, CONTAINER_WIDTH_HEIGHT+cont_y), 2)
 
-    drawRect(cont_x, cont_y, CONTAINER_WIDTH_HEIGHT)
     cell_size = CONTAINER_WIDTH_HEIGHT/divisions
 
     for x in range(divisions):
@@ -47,11 +51,8 @@ def drawGrid(divisions):
                          (cont_x+CONTAINER_WIDTH_HEIGHT, 0 + cont_y + (cell_size*y)), 2)
 
 
-def drawRect(x, y, Size):
-    pygame.draw.line(_VARS['surf'], BLACK, (x,y), (Size + x, y), 2)
-    pygame.draw.line(_VARS['surf'], BLACK, (x,y), (x, Size + y), 2)
-    pygame.draw.line(_VARS['surf'], BLACK, (x, Size + y), (Size + x, Size + y), 2)
-    pygame.draw.line(_VARS['surf'], BLACK, (Size + x, y),(Size + x, Size + y), 2)
+def drawRect():
+    pygame.draw.rect(_VARS['surf'],BLACK, (18,18,60,60))
 
 
 def drawLine():
