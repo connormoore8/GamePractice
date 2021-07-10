@@ -1,13 +1,18 @@
+import numpy as np
 import sys
 import pygame
 from pygame.locals import KEYDOWN, K_q
 
-SCREENSIZE = WIDTH, HEIGHT = 600, 400
+MAP = np.zeros((6,6), dtype=int)
+cellMap = np.random.randint(3, size=(10,10))
+SCREENSIZE = WIDTH, HEIGHT = 800, 600
 #PADDING = PADDINGBOTTOM, PADDINGRIGHT = 60, 60
 BLACK = (0, 0, 0)
 GREY = (160, 160, 160)
+WHITE = (255, 255, 255)
 # GLOBAL VARS, Using a Dictionary.
-_VARS = {'surf': False}
+_VARS = {'surf': False, 'gridWH': 400, 'gridCells': cellMap.shape[0],
+         'gridOrigin': (200,100), 'lineWidth': 2}
 
 # Press the green button in the gutter to run the script.
 
@@ -19,10 +24,35 @@ def main():
     while True:
         checkEvents()
         _VARS['surf'].fill(GREY)
-        #drawLine()
-        drawGrid(4)
-        drawRect()
+        #draw a grid
+        drawSquareGrid(_VARS['gridOrigin'],_VARS['gridWH'],_VARS['gridCells'])
+        #place cells
+        placeCells()
         pygame.display.update()
+
+def placeCells():
+    cellBorder = 10
+    celldimX = celldimY = (_VARS['gridWH']/_VARS['gridCells']) - (cellBorder*2)
+    for row in range(cellMap.shape[0]):
+        for column in range(cellMap.shape[1]):
+
+            if(cellMap[column][row]==1):
+                col = WHITE
+            elif(cellMap[column][row]==2):
+                col = BLACK
+            else:
+                col = GREY
+            drawSquareCell(
+                _VARS['gridOrigin'][0] + (celldimY*row)
+                + cellBorder + (2*row*cellBorder) + _VARS['lineWidth']/2,
+                _VARS['gridOrigin'][1] + (celldimY * column)
+                + cellBorder + (2 * column * cellBorder) + _VARS['lineWidth'] / 2,
+                celldimX, celldimY, col)
+
+
+def drawSquareCell(x, y, dimX, dimY, color):
+    pygame.draw.rect(_VARS['surf'], color, (x, y, dimX, dimY))
+
 
 def checkEvents():
     for event in pygame.event.get():
@@ -32,27 +62,23 @@ def checkEvents():
             pygame.quit()
             sys.exit()
 
-def drawGrid(divisions):
-    CONTAINER_WIDTH_HEIGHT = 300
-    cont_x, cont_y = 10, 10
-    pygame.draw.line(_VARS['surf'], BLACK, (cont_x, cont_y), (CONTAINER_WIDTH_HEIGHT+cont_x, cont_y), 2)
-    pygame.draw.line(_VARS['surf'], BLACK, (cont_x, cont_y), (cont_x, CONTAINER_WIDTH_HEIGHT+cont_y), 2)
-    pygame.draw.line(_VARS['surf'], BLACK, (cont_x, CONTAINER_WIDTH_HEIGHT+cont_y), (CONTAINER_WIDTH_HEIGHT+cont_x, CONTAINER_WIDTH_HEIGHT+cont_y), 2)
-    pygame.draw.line(_VARS['surf'], BLACK, (CONTAINER_WIDTH_HEIGHT+cont_x, cont_y), (CONTAINER_WIDTH_HEIGHT+cont_x, CONTAINER_WIDTH_HEIGHT+cont_y), 2)
+def drawSquareGrid(origin, gridWH, cells):
+    CONTAINER_WIDTH_HEIGHT = gridWH
+    cont_x, cont_y = origin
+    pygame.draw.line(_VARS['surf'], BLACK, (cont_x, cont_y), (CONTAINER_WIDTH_HEIGHT+cont_x, cont_y), _VARS['lineWidth'])
+    pygame.draw.line(_VARS['surf'], BLACK, (cont_x, cont_y), (cont_x, CONTAINER_WIDTH_HEIGHT+cont_y), _VARS['lineWidth'])
+    pygame.draw.line(_VARS['surf'], BLACK, (cont_x, CONTAINER_WIDTH_HEIGHT+cont_y), (CONTAINER_WIDTH_HEIGHT+cont_x, CONTAINER_WIDTH_HEIGHT+cont_y), _VARS['lineWidth'])
+    pygame.draw.line(_VARS['surf'], BLACK, (CONTAINER_WIDTH_HEIGHT+cont_x, cont_y), (CONTAINER_WIDTH_HEIGHT+cont_x, CONTAINER_WIDTH_HEIGHT+cont_y), _VARS['lineWidth'])
 
-    cell_size = CONTAINER_WIDTH_HEIGHT/divisions
+    cell_size = CONTAINER_WIDTH_HEIGHT/cells
 
-    for x in range(divisions):
+    for x in range(cells):
         pygame.draw.line(_VARS['surf'],BLACK, (cont_x+(cell_size*x),0+cont_y),
                          (cont_x+(cell_size*x),CONTAINER_WIDTH_HEIGHT+cont_y),2)
 
-    for y in range(divisions):
+    for y in range(cells):
         pygame.draw.line(_VARS['surf'], BLACK, (cont_x, cont_y+(cell_size*y)),
                          (cont_x+CONTAINER_WIDTH_HEIGHT, 0 + cont_y + (cell_size*y)), 2)
-
-
-def drawRect():
-    pygame.draw.rect(_VARS['surf'],BLACK, (18,18,60,60))
 
 
 def drawLine():
