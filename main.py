@@ -12,9 +12,14 @@ GREY = (160, 160, 160)
 WHITE = (255, 255, 255)
 #cellMap = np.random.randint(2, size=(10,10))
 # GLOBAL VARS, Using a Dictionary.
-_VARS = {'surf': False, 'gridWH': 400, 'gridCells': 10,
-         'gridOrigin': (200,100), 'lineWidth': 2,
-         'cellMap':np.random.randint(2, size=(10,10)) }
+# random state: np.random.randint(2, size=(15,15))
+board = np.zeros((15,15),dtype=int)
+#board[2] = [0,0,0,1,1,1,0,0,0,1,1,1,0,0,0]
+board[7] = [0 for x in range(6)] + [1,1,1] + [0 for x in range(6)]
+    #[1 for x in range(board.shape[0])]
+_VARS = {'surf': False, 'gridWH': 500, 'gridCells': 15,
+         'gridOrigin': (150,50), 'lineWidth': 2,
+         'cellMap':board}
 
 # Press the green button in the gutter to run the script.
 
@@ -26,6 +31,7 @@ def main():
     print(_VARS['cellMap'])
     while True:
         checkEvents()
+        pygame.time.wait(500)
         _VARS['surf'].fill(GREY)
         nextGen = np.zeros((_VARS['gridCells'], _VARS['gridCells']),dtype=int)
         #draw a grid
@@ -42,23 +48,24 @@ def main():
 
 def examineCell(i, j, nextGen):
     #sum N Neighbors:
-    if i==0 or i == 9 or j ==0 or j == 9:
-        nextGen[j][i]=0
+    edge = _VARS['gridCells'] - 1
+    if i==0 or i == edge or j ==0 or j == edge:
+        nextGen[i][j]=0
         return
     total = 0
     for x in range(3):
         for y in range(3):
-            total += _VARS['cellMap'][j+y-1][i+x-1]
-    if _VARS['cellMap'][j][i]==1:
+            total += _VARS['cellMap'][i+x-1][j+y-1]
+    if _VARS['cellMap'][i][j]==1:
         if total == 3 or total == 4:
             #print('survive')
-            nextGen[j][i] = 1
+            nextGen[i][j] = 1
             #update new cellMap
         #else perish
     else:
         if total == 2:
             #print('reproduce')
-            nextGen[j][i] = 1
+            nextGen[i][j] = 1
         #else remain unoccupied
 
 
