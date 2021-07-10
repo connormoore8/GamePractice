@@ -4,15 +4,17 @@ import pygame
 from pygame.locals import KEYDOWN, K_q
 
 MAP = np.zeros((6,6), dtype=int)
-cellMap = np.random.randint(3, size=(10,10))
+
 SCREENSIZE = WIDTH, HEIGHT = 800, 600
 #PADDING = PADDINGBOTTOM, PADDINGRIGHT = 60, 60
 BLACK = (0, 0, 0)
 GREY = (160, 160, 160)
 WHITE = (255, 255, 255)
+#cellMap = np.random.randint(2, size=(10,10))
 # GLOBAL VARS, Using a Dictionary.
-_VARS = {'surf': False, 'gridWH': 400, 'gridCells': cellMap.shape[0],
-         'gridOrigin': (200,100), 'lineWidth': 2}
+_VARS = {'surf': False, 'gridWH': 400, 'gridCells': 10,
+         'gridOrigin': (200,100), 'lineWidth': 2,
+         'cellMap':np.random.randint(2, size=(10,10)) }
 
 # Press the green button in the gutter to run the script.
 
@@ -21,25 +23,55 @@ def main():
     _VARS['surf'] = pygame.display.set_mode(SCREENSIZE)
     # The loop proper, things inside this loop will
     # be called over and over until you exit the window
+    print(_VARS['cellMap'])
     while True:
         checkEvents()
         _VARS['surf'].fill(GREY)
+        nextGen = np.zeros((_VARS['gridCells'], _VARS['gridCells']),dtype=int)
         #draw a grid
         drawSquareGrid(_VARS['gridOrigin'],_VARS['gridWH'],_VARS['gridCells'])
         #place cells
         placeCells()
+        #update entry
+        for x in range(_VARS['cellMap'].shape[0]):
+            for y in range(_VARS['cellMap'].shape[1]):
+                examineCell(x, y, nextGen)
+        _VARS['cellMap'] = nextGen
         pygame.display.update()
+
+
+def examineCell(i, j, nextGen):
+    #sum N Neighbors:
+    if i==0 or i == 9 or j ==0 or j == 9:
+        nextGen[j][i]=0
+        return
+    total = 0
+    for x in range(3):
+        for y in range(3):
+            total += _VARS['cellMap'][j+y-1][i+x-1]
+    if _VARS['cellMap'][j][i]==1:
+        if total == 3 or total == 4:
+            #print('survive')
+            nextGen[j][i] = 1
+            #update new cellMap
+        #else perish
+    else:
+        if total == 2:
+            #print('reproduce')
+            nextGen[j][i] = 1
+        #else remain unoccupied
+
 
 def placeCells():
     cellBorder = 10
     celldimX = celldimY = (_VARS['gridWH']/_VARS['gridCells']) - (cellBorder*2)
-    for row in range(cellMap.shape[0]):
-        for column in range(cellMap.shape[1]):
+    for row in range(_VARS['cellMap'].shape[0]):
+        for column in range(_VARS['cellMap'].shape[1]):
 
-            if(cellMap[column][row]==1):
+            if(_VARS['cellMap'][column][row]==1):
                 col = WHITE
-            elif(cellMap[column][row]==2):
-                col = BLACK
+            #elif(cellMap[column][row]==2):
+            #    col = BLACK
             else:
                 col = GREY
             drawSquareCell(
@@ -88,5 +120,6 @@ def drawLine():
     pygame.draw.line(_VARS['surf'], BLACK, (WIDTH, 0), (0, HEIGHT), 2)
 
 if __name__ == '__main__':
+    #cellMap = np.random.randint(2, size=(10, 10))
     main()
 
