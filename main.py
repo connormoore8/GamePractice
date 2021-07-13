@@ -15,7 +15,8 @@ WHITE = (255, 255, 255)
 # random state: np.random.randint(2, size=(15,15))
 board = np.zeros((15,15),dtype=int)
 #board[2] = [0,0,0,1,1,1,0,0,0,1,1,1,0,0,0]
-board[7] = [0 for x in range(6)] + [1,1,1] + [0 for x in range(6)]
+#board[6] = [0 for x in range(6)] + [1,1] + [0 for x in range(7)]
+#board[7] = [0 for x in range(6)] + [1,1] + [0 for x in range(7)]
     #[1 for x in range(board.shape[0])]
 _VARS = {'surf': False, 'gridWH': 500, 'gridCells': 15,
          'gridOrigin': (150,50), 'lineWidth': 2,
@@ -39,10 +40,10 @@ def main():
         #place cells
         placeCells()
         #update entry
-        for x in range(_VARS['cellMap'].shape[0]):
-            for y in range(_VARS['cellMap'].shape[1]):
-                examineCell(x, y, nextGen)
-        _VARS['cellMap'] = nextGen
+        #for x in range(_VARS['cellMap'].shape[1]):
+        #    for y in range(_VARS['cellMap'].shape[0]):
+        #        examineCell(x, y, nextGen)
+        #_VARS['cellMap'] = nextGen
         pygame.display.update()
 
 
@@ -50,24 +51,26 @@ def examineCell(i, j, nextGen):
     #sum N Neighbors:
     edge = _VARS['gridCells'] - 1
     if i==0 or i == edge or j ==0 or j == edge:
-        nextGen[i][j]=0
+        nextGen[j][i]=0
         return
     total = 0
     for x in range(3):
         for y in range(3):
-            total += _VARS['cellMap'][i+x-1][j+y-1]
-    if _VARS['cellMap'][i][j]==1:
+            total += _VARS['cellMap'][j+y-1][i+x-1]
+    if _VARS['cellMap'][j][i]==1:
         if total == 3 or total == 4:
             #print('survive')
-            nextGen[i][j] = 1
+            nextGen[j][i] = 1
             #update new cellMap
-        #else perish
+        else:
+            nextGen[j][i] = 0
     else:
-        if total == 2:
+        if total == 3:
             #print('reproduce')
-            nextGen[i][j] = 1
-        #else remain unoccupied
-
+            nextGen[j][i] = 1
+        else:
+            nextGen[j][i] = 0
+    #print(nextGen)
 
 def placeCells():
     cellBorder = 10
