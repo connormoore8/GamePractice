@@ -33,7 +33,7 @@ def main():
     while True:
         checkEvents()
 
-        pygame.time.wait(500)
+        pygame.time.wait(2500)
         _VARS['surf'].fill(GREY)
         nextGen = np.zeros((_VARS['gridCells'], _VARS['gridCells']),dtype=int)
         #draw a grid
@@ -41,10 +41,10 @@ def main():
         #place cells
         placeCells()
         #update entry
-        #for x in range(_VARS['cellMap'].shape[1]):
-        #    for y in range(_VARS['cellMap'].shape[0]):
-        #        examineCell(x, y, nextGen)
-        #_VARS['cellMap'] = nextGen
+        for x in range(_VARS['cellMap'].shape[1]):
+            for y in range(_VARS['cellMap'].shape[0]):
+                examineCell(x, y, nextGen)
+        _VARS['cellMap'] = nextGen
         pygame.display.update()
 
 
@@ -105,8 +105,10 @@ def checkEvents():
         elif event.type == pygame.MOUSEBUTTONUP:
             pos = pygame.mouse.get_pos()
             #print(pos)
-            print(indexPicker(pos,0), indexPicker(pos,1))
-            #convert to position on board.
+            # convert to position on board.
+            coord = indexPicker(pos,1), indexPicker(pos,0)
+            #update cellBoard
+            _VARS['cellMap'][coord[0]][coord[1]] = 1
 
         elif event.type == KEYDOWN and event.key == K_q:
             pygame.quit()
