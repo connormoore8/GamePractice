@@ -32,6 +32,7 @@ def main():
     print(_VARS['cellMap'])
     while True:
         checkEvents()
+
         pygame.time.wait(500)
         _VARS['surf'].fill(GREY)
         nextGen = np.zeros((_VARS['gridCells'], _VARS['gridCells']),dtype=int)
@@ -100,9 +101,30 @@ def checkEvents():
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             sys.exit()
+        #handle mouse events
+        elif event.type == pygame.MOUSEBUTTONUP:
+            pos = pygame.mouse.get_pos()
+            #print(pos)
+            print(indexPicker(pos,0), indexPicker(pos,1))
+            #convert to position on board.
+
         elif event.type == KEYDOWN and event.key == K_q:
             pygame.quit()
             sys.exit()
+
+def indexPicker(mousePos, axis):
+    indexList = [_VARS['gridOrigin'][axis]  + (_VARS['gridWH']/_VARS['gridCells'])*x for x in range(_VARS['gridCells'])]
+    index = -1
+    for element in indexList:
+        if mousePos[axis] < element:
+            return index
+        index +=1
+    return 14
+
+
+
+
+
 
 def drawSquareGrid(origin, gridWH, cells):
     CONTAINER_WIDTH_HEIGHT = gridWH
