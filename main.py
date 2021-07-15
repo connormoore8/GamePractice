@@ -121,7 +121,7 @@ def indexPicker(mousePos, axis):
         if mousePos[axis] < element:
             return index
         index +=1
-    return 14
+    return _VARS['gridCells']-1
 
 
 
