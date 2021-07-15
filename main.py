@@ -1,31 +1,33 @@
 import numpy as np
 import sys
 import pygame
-from pygame.locals import KEYDOWN, K_q
+from pygame.locals import KEYDOWN, K_q, K_SPACE
 
-MAP = np.zeros((6,6), dtype=int)
 
+MAP = np.zeros((6, 6), dtype=int)
 SCREENSIZE = WIDTH, HEIGHT = 800, 600
-#PADDING = PADDINGBOTTOM, PADDINGRIGHT = 60, 60
+# PADDING = PADDINGBOTTOM, PADDINGRIGHT = 60, 60
 BLACK = (0, 0, 0)
 GREY = (160, 160, 160)
 WHITE = (255, 255, 255)
-#cellMap = np.random.randint(2, size=(10,10))
+# cellMap = np.random.randint(2, size=(10,10))
 # GLOBAL VARS, Using a Dictionary.
 # random state: np.random.randint(2, size=(15,15))
-board = np.zeros((15,15),dtype=int)
-#board[2] = [0,0,0,1,1,1,0,0,0,1,1,1,0,0,0]
-#board[6] = [0 for x in range(6)] + [1,1] + [0 for x in range(7)]
-#board[7] = [0 for x in range(6)] + [1,1] + [0 for x in range(7)]
-    #[1 for x in range(board.shape[0])]
+# board[2] = [0,0,0,1,1,1,0,0,0,1,1,1,0,0,0]
+# board[6] = [0 for x in range(6)] + [1,1] + [0 for x in range(7)]
+# board[7] = [0 for x in range(6)] + [1,1] + [0 for x in range(7)]
+# [1 for x in range(board.shape[0])]
 _VARS = {'surf': False, 'gridWH': 500, 'gridCells': 15,
-         'gridOrigin': (150,50), 'lineWidth': 2,
-         'cellMap':board}
+         'gridOrigin': (150, 50), 'lineWidth': 2,
+         'cellMap': np.zeros((15, 15), dtype=int), 'state': False}
 
 # Press the green button in the gutter to run the script.
 
+
 def main():
-    pygame.init()  # Initial Setup
+    pygame.init()
+    delay = 10
+    # Initial Setup
     _VARS['surf'] = pygame.display.set_mode(SCREENSIZE)
     # The loop proper, things inside this loop will
     # be called over and over until you exit the window
@@ -33,45 +35,47 @@ def main():
     while True:
         checkEvents()
 
-        pygame.time.wait(2500)
+        pygame.time.wait(delay)
         _VARS['surf'].fill(GREY)
-        nextGen = np.zeros((_VARS['gridCells'], _VARS['gridCells']),dtype=int)
-        #draw a grid
-        drawSquareGrid(_VARS['gridOrigin'],_VARS['gridWH'],_VARS['gridCells'])
-        #place cells
+        nextGen = np.zeros((_VARS['gridCells'], _VARS['gridCells']), dtype=int)
+        # draw a grid
+        drawSquareGrid(_VARS['gridOrigin'], _VARS['gridWH'], _VARS['gridCells'])
+        # place cells
         placeCells()
-        #update entry
-        for x in range(_VARS['cellMap'].shape[1]):
-            for y in range(_VARS['cellMap'].shape[0]):
-                examineCell(x, y, nextGen)
-        _VARS['cellMap'] = nextGen
+        # update entry
+        if _VARS['state']:
+            delay = 250
+            for x in range(_VARS['cellMap'].shape[1]):
+                for y in range(_VARS['cellMap'].shape[0]):
+                    examineCell(x, y, nextGen)
+            _VARS['cellMap'] = nextGen
         pygame.display.update()
 
 
 def examineCell(i, j, nextGen):
-    #sum N Neighbors:
+    # sum N Neighbors:
     edge = _VARS['gridCells'] - 1
-    if i==0 or i == edge or j ==0 or j == edge:
-        nextGen[j][i]=0
+    if i == 0 or i == edge or j == 0 or j == edge:
+        nextGen[j][i] = 0
         return
     total = 0
     for x in range(3):
         for y in range(3):
             total += _VARS['cellMap'][j+y-1][i+x-1]
-    if _VARS['cellMap'][j][i]==1:
+    if _VARS['cellMap'][j][i] == 1:
         if total == 3 or total == 4:
-            #print('survive')
+            # update new cellMap
             nextGen[j][i] = 1
-            #update new cellMap
         else:
             nextGen[j][i] = 0
     else:
         if total == 3:
-            #print('reproduce')
+            # print('reproduce')
             nextGen[j][i] = 1
         else:
             nextGen[j][i] = 0
-    #print(nextGen)
+    # print(nextGen)
+
 
 def placeCells():
     cellBorder = 10
@@ -79,9 +83,9 @@ def placeCells():
     for row in range(_VARS['cellMap'].shape[0]):
         for column in range(_VARS['cellMap'].shape[1]):
 
-            if(_VARS['cellMap'][column][row]==1):
+            if _VARS['cellMap'][column][row] == 1:
                 col = WHITE
-            #elif(cellMap[column][row]==2):
+            # elif(cellMap[column][row]==2):
             #    col = BLACK
             else:
                 col = GREY
@@ -101,15 +105,16 @@ def checkEvents():
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             sys.exit()
-        #handle mouse events
+        # handle mouse events
         elif event.type == pygame.MOUSEBUTTONUP:
             pos = pygame.mouse.get_pos()
-            #print(pos)
+            # print(pos)
             # convert to position on board.
-            coord = indexPicker(pos,1), indexPicker(pos,0)
-            #update cellBoard
+            coord = indexPicker(pos, 1), indexPicker(pos, 0)
+            # update cellBoard
             _VARS['cellMap'][coord[0]][coord[1]] = 1
-
+        elif event.type == KEYDOWN and event.key == K_SPACE:
+            _VARS['state'] = True
         elif event.type == KEYDOWN and event.key == K_q:
             pygame.quit()
             sys.exit()
@@ -120,7 +125,7 @@ def indexPicker(mousePos, axis):
     for element in indexList:
         if mousePos[axis] < element:
             return index
-        index +=1
+        index += 1
     return _VARS['gridCells']-1
 
 
@@ -154,6 +159,6 @@ def drawLine():
     pygame.draw.line(_VARS['surf'], BLACK, (WIDTH, 0), (0, HEIGHT), 2)
 
 if __name__ == '__main__':
-    #cellMap = np.random.randint(2, size=(10, 10))
+    # cellMap = np.random.randint(2, size=(10, 10))
     main()
 
