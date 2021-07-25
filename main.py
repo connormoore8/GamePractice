@@ -5,11 +5,12 @@ from pygame.locals import KEYDOWN, K_q, K_SPACE
 
 
 MAP = np.zeros((6, 6), dtype=int)
-SCREENSIZE = WIDTH, HEIGHT = 800, 600
+SCREENSIZE = WIDTH, HEIGHT = 800, 800
 # PADDING = PADDINGBOTTOM, PADDINGRIGHT = 60, 60
 BLACK = (0, 0, 0)
 GREY = (160, 160, 160)
 WHITE = (255, 255, 255)
+dimension = 25
 # cellMap = np.random.randint(2, size=(10,10))
 # random state: np.random.randint(2, size=(15,15))
 # board[2] = [0,0,0,1,1,1,0,0,0,1,1,1,0,0,0]
@@ -17,9 +18,9 @@ WHITE = (255, 255, 255)
 # board[7] = [0 for x in range(6)] + [1,1] + [0 for x in range(7)]
 # [1 for x in range(board.shape[0])]
 # GLOBAL VARS, Using a Dictionary
-_VARS = {'surf': False, 'gridWH': 500, 'gridCells': 15,
-         'gridOrigin': (150, 50), 'lineWidth': 2,
-         'cellMap': np.zeros((18, 18), dtype=int),
+_VARS = {'surf': False, 'gridWH': 500, 'gridCells': dimension,
+         'gridOrigin': (150, 150), 'lineWidth': 2,
+         'cellMap': np.zeros((dimension+3, dimension+3), dtype=int),
          'state': False}
 
 
@@ -31,12 +32,14 @@ def main():
     # The loop proper, things inside this loop will
     # be called over and over until you exit the window
     print(_VARS['cellMap'])
+    pygame.draw.rect(_VARS['surf'], 'black', (0+0, 0, 800, 100))
     while True:
         checkEvents()
 
         pygame.time.wait(delay)
         _VARS['surf'].fill(GREY)
         nextGen = np.zeros((_VARS['gridCells']+3, _VARS['gridCells']+3), dtype=int)
+        pygame.draw.rect(_VARS['surf'], 'black', (0, 0, 800, 100))
         # draw a grid
         drawSquareGrid(_VARS['gridOrigin'], _VARS['gridWH'], _VARS['gridCells'])
         # place cells
