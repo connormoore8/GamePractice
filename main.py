@@ -11,17 +11,16 @@ BLACK = (0, 0, 0)
 GREY = (160, 160, 160)
 WHITE = (255, 255, 255)
 # cellMap = np.random.randint(2, size=(10,10))
-# GLOBAL VARS, Using a Dictionary.
 # random state: np.random.randint(2, size=(15,15))
 # board[2] = [0,0,0,1,1,1,0,0,0,1,1,1,0,0,0]
 # board[6] = [0 for x in range(6)] + [1,1] + [0 for x in range(7)]
 # board[7] = [0 for x in range(6)] + [1,1] + [0 for x in range(7)]
 # [1 for x in range(board.shape[0])]
+# GLOBAL VARS, Using a Dictionary
 _VARS = {'surf': False, 'gridWH': 500, 'gridCells': 15,
          'gridOrigin': (150, 50), 'lineWidth': 2,
-         'cellMap': np.zeros((15, 15), dtype=int), 'state': False}
-
-# Press the green button in the gutter to run the script.
+         'cellMap': np.zeros((18, 18), dtype=int),
+         'state': False}
 
 
 def main():
@@ -37,7 +36,7 @@ def main():
 
         pygame.time.wait(delay)
         _VARS['surf'].fill(GREY)
-        nextGen = np.zeros((_VARS['gridCells'], _VARS['gridCells']), dtype=int)
+        nextGen = np.zeros((_VARS['gridCells']+3, _VARS['gridCells']+3), dtype=int)
         # draw a grid
         drawSquareGrid(_VARS['gridOrigin'], _VARS['gridWH'], _VARS['gridCells'])
         # place cells
@@ -49,12 +48,13 @@ def main():
                 for y in range(_VARS['cellMap'].shape[0]):
                     examineCell(x, y, nextGen)
             _VARS['cellMap'] = nextGen
+            #print(_VARS['cellMap'])
         pygame.display.update()
 
 
 def examineCell(i, j, nextGen):
     # sum N Neighbors:
-    edge = _VARS['gridCells'] - 1
+    edge = _VARS['gridCells'] + 2
     if i == 0 or i == edge or j == 0 or j == edge:
         nextGen[j][i] = 0
         return
@@ -78,12 +78,13 @@ def examineCell(i, j, nextGen):
 
 
 def placeCells():
-    cellBorder = 10
+    cellBorder = (_VARS['gridWH']/_VARS['gridCells'])*.15
+    #cellBorder = 10
     celldimX = celldimY = (_VARS['gridWH']/_VARS['gridCells']) - (cellBorder*2)
-    for row in range(_VARS['cellMap'].shape[0]):
-        for column in range(_VARS['cellMap'].shape[1]):
+    for row in range(_VARS['cellMap'].shape[0]-3):
+        for column in range(_VARS['cellMap'].shape[1]-3):
 
-            if _VARS['cellMap'][column][row] == 1:
+            if _VARS['cellMap'][column+3][row+3] == 1:
                 col = WHITE
             # elif(cellMap[column][row]==2):
             #    col = BLACK
@@ -112,7 +113,9 @@ def checkEvents():
             # convert to position on board.
             coord = indexPicker(pos, 1), indexPicker(pos, 0)
             # update cellBoard
-            _VARS['cellMap'][coord[0]][coord[1]] = 1
+            #original without buffer
+            #_VARS['cellMap'][coord[0]][coord[1]] = 1
+            _VARS['cellMap'][coord[0]+3][coord[1]+3] = 1
         elif event.type == KEYDOWN and event.key == K_SPACE:
             _VARS['state'] = True
         elif event.type == KEYDOWN and event.key == K_q:
@@ -120,7 +123,7 @@ def checkEvents():
             sys.exit()
 
 def indexPicker(mousePos, axis):
-    indexList = [_VARS['gridOrigin'][axis]  + (_VARS['gridWH']/_VARS['gridCells'])*x for x in range(_VARS['gridCells'])]
+    indexList = [_VARS['gridOrigin'][axis] + (_VARS['gridWH']/_VARS['gridCells'])*x for x in range(_VARS['gridCells'])]
     index = -1
     for element in indexList:
         if mousePos[axis] < element:
