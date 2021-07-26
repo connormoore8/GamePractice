@@ -43,6 +43,7 @@ def main():
         placeCells()
         _VARS['surf'].blit(txt_surface, (WIDTH/2 - 5*len(_VARS['text']), _VARS['input'].y + 45))
         pygame.display.update()
+        nextGen = np.zeros((_VARS['gridCells'] + 6, _VARS['gridCells'] + 6), dtype=int)
 
 
 def examineCell(i, j, nextGen):
@@ -112,7 +113,7 @@ def checkEvents():
             # print(pos)
             # convert to position on board.
             coord = indexPicker(pos, 1), indexPicker(pos, 0)
-            print(coord)
+            #print(coord)
             # update cellBoard
             #original without buffer
             #_VARS['cellMap'][coord[0]][coord[1]] = 1
@@ -121,7 +122,7 @@ def checkEvents():
         if event.type == KEYDOWN:
             if _VARS['KeyBoardInput']:
                 if event.key == pygame.K_RETURN:
-                    print(_VARS['text'])
+                    #print(_VARS['text'])
                     #try to convert text to numbers.
                     _VARS['gridCells'] = text_interpretor(_VARS['text'])
                     _VARS['text'] = "Click on Squares to Activate Cell, and press 'Space' to start the game!"
@@ -164,8 +165,8 @@ def drawSquareGrid(origin, gridWH, cells):
     cell_size = CONTAINER_WIDTH_HEIGHT/cells
 
     for x in range(cells):
-        pygame.draw.line(_VARS['surf'],BLACK, (cont_x+(cell_size*x),0+cont_y),
-                         (cont_x+(cell_size*x),CONTAINER_WIDTH_HEIGHT+cont_y),2)
+        pygame.draw.line(_VARS['surf'], BLACK, (cont_x+(cell_size*x), 0+cont_y),
+                         (cont_x+(cell_size*x), CONTAINER_WIDTH_HEIGHT+cont_y), 2)
 
     for y in range(cells):
         pygame.draw.line(_VARS['surf'], BLACK, (cont_x, cont_y+(cell_size*y)),
